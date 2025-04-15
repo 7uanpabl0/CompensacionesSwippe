@@ -1,0 +1,21 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: 1234
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  application:
+    name: compensaciones
+server:
+  port: 8080
+fx:
+  api:
+    key: 153c281075bc4b6274281937
+    url: https://v6.exchangerate-api.com/v6
