@@ -7,13 +7,16 @@ import com.example.compensaciones.domain.repository.CompensacionRepository;
 import com.example.compensaciones.domain.service.CompensacionService;
 import com.example.compensaciones.domain.service.FxService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CompensacionServiceImpl implements CompensacionService {
@@ -22,12 +25,10 @@ public class CompensacionServiceImpl implements CompensacionService {
     private final FxService fxService;
 
     @Override
+    @Transactional
     public CompensacionResponseDto registrarCompensacion(CompensacionRequestDto requestDto) {
-        BigDecimal tipoCambio = fxService.obtenerTipoCambio(requestDto.getMonedaOrigen(), requestDto.getMonedaDestino());
-        BigDecimal montoConvertido = requestDto.getMonto().multiply(tipoCambio);
-        System.out.println(requestDto.getMonto());
-        System.out.println(tipoCambio);
-        System.out.println(montoConvertido);
+        BigDecimal tipoCambio = fxService.obtenerTipoCambio(requestDto.getMonedaOrigen(), requestDto.getMonedaDestino()).setScale(6, RoundingMode.HALF_UP);;
+        BigDecimal montoConvertido = requestDto.getMonto().multiply(tipoCambio).setScale(2, RoundingMode.HALF_UP);;
 
         Compensacion entity = Compensacion.builder()
                 .monto(requestDto.getMonto())
@@ -35,10 +36,14 @@ public class CompensacionServiceImpl implements CompensacionService {
                 .monedaDestino(requestDto.getMonedaDestino())
                 .tipoCambio(tipoCambio)
                 .montoConvertido(montoConvertido)
-                .fechaRegistro(LocalDateTime.now())
                 .ejecutado(false)
                 .build();
-
+        log.info("[REGISTRO] TXID={} MONTO={} ORIGEN={} DESTINO={} FX={}",
+                entity.getMonto(),
+                entity.getMonedaOrigen(),
+                entity.getMonedaDestino(),
+                entity.getTipoCambio()
+        );
         Compensacion saved = repository.save(entity);
         return mapToDto(saved);
     }
@@ -49,6 +54,7 @@ public class CompensacionServiceImpl implements CompensacionService {
     }
 
     @Override
+ //   @Transactional
     public CompensacionResponseDto ejecutarCompensacion() {
        return null;
 
@@ -69,7 +75,6 @@ public class CompensacionServiceImpl implements CompensacionService {
                 .monedaDestino(c.getMonedaDestino())
                 .tipoCambio(c.getTipoCambio())
                 .montoConvertido(c.getMontoConvertido())
-                .fechaRegistro(c.getFechaRegistro())
                 .ejecutado(c.isEjecutado())
                 .build();
     }

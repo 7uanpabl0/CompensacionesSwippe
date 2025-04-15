@@ -17,6 +17,5 @@ public class CompensacionResponseDto {
     private String monedaDestino;
     private BigDecimal tipoCambio;
     private BigDecimal montoConvertido;
-    private LocalDateTime fechaRegistro;
     private boolean ejecutado;
 }

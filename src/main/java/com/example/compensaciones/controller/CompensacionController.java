@@ -19,7 +19,7 @@ public class CompensacionController {
         CompensacionResponseDto response = compensacionService.registrarCompensacion(requestDto);
         return ResponseEntity.ok(response);
     }
-s
+
     @GetMapping("/{id}")
     public ResponseEntity<CompensacionResponseDto> obtenerPorId(@PathVariable Long id) {
         return compensacionService.obtenerCompensacionPorId(id)

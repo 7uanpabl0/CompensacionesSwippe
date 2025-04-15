@@ -2,12 +2,14 @@ package com.example.compensaciones.error;
 
 import com.example.compensaciones.client.dto.ApiErrorDto;
 import com.example.compensaciones.domain.exception.TipoCambioNoDisponibleException;
+import com.example.compensaciones.domain.exception.TransaccionDuplicadaException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -47,4 +49,17 @@ public class GlobalExceptionHandler {
                         .build()
         );
     }
+
+    @ExceptionHandler(TransaccionDuplicadaException.class)
+    public ResponseEntity<ApiErrorDto> handleDuplicada(TransaccionDuplicadaException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                ApiErrorDto.builder()
+                        .mensaje("Transacción duplicada")
+                        .detalle(ex.getMessage())
+                        .codigo(HttpStatus.CONFLICT.value())
+                        .timestamp(LocalDateTime.now(ZoneOffset.UTC))
+                        .build()
+        );
+    }
+
 }

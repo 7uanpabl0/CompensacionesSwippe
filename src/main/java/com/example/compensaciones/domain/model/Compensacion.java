@@ -29,7 +29,5 @@ public class Compensacion {
 
     private BigDecimal montoConvertido;
 
-    private LocalDateTime fechaRegistro;
-
     private boolean ejecutado;
 }
