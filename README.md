@@ -88,6 +88,10 @@ COPY target/compensaciones-0.0.1-SNAPSHOT.jar app.jar
 # Ejecuta la app
 ENTRYPOINT ["java", "-jar", "app.jar"]
 
+### Si en docker no funiciona por la url de los bancos, hace falta crear los datos de los endpoints 
+docker exec -it postgres-db psql -U postgres -d postgres
+
+INSERT INTO banco_destino (id, endpoint, moneda, pais) VALUES (1, 'http://localhost:8080/api/bancolombia', 'COP', 'Colombia'), (2, 'http://localhost:8080/api/usbank', 'USD', 'Estados Unidos');
 
 
 ###  3️⃣ Construcción y despliegue
