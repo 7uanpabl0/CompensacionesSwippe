@@ -7,6 +7,6 @@ import java.util.Optional;
 
 public interface CompensacionService {
     CompensacionResponseDto registrarCompensacion(CompensacionRequestDto requestDto);
-    Optional<CompensacionResponseDto> obtenerCompensacionPorId(Long id);
-    CompensacionResponseDto ejecutarCompensacion();
+    CompensacionResponseDto  obtenerCompensacionPorId(Long id);
+    public void ejecutarCompensacion();
 }

@@ -1,21 +1,20 @@
 package com.example.compensaciones.domain.model;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
-@Table(name = "compensaciones")
+@Table(name = "bancolombia_transacciones")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Compensacion  {
+public class BancoTransaccion {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,15 +23,9 @@ public class Compensacion  {
     private BigDecimal monto;
 
     private String monedaOrigen;
-
     private String monedaDestino;
-
     private BigDecimal tipoCambio;
-
-    @Column(name = "fecha_registro", insertable = false, updatable = false)
-    private LocalDateTime fechaRegistro;
-
-    private BigDecimal montoConvertido;
-
     private boolean ejecutado;
+    private LocalDateTime fechaRegistro;
+    private UUID paquete;
 }

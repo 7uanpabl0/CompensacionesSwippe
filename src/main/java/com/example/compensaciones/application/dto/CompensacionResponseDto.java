@@ -1,16 +1,18 @@
 package com.example.compensaciones.application.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.*;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CompensacionResponseDto {
+@JsonSerialize
+public class CompensacionResponseDto implements Serializable {
     private Long id;
     private BigDecimal monto;
     private String monedaOrigen;
