@@ -39,7 +39,7 @@ class CompensacionServiceImplTest {
     private CompensacionServiceImpl compensacionService;
 
     @Test
-    void ejecutarCompensacion_lanzaExcepcionSiFallaSaveAll() {
+    void ejecutarCompensacion_Fallo_basesDatos() {
         // 🔸 Transacción simulada
         Compensacion tx = Compensacion.builder()
                 .id(1L)
@@ -63,5 +63,26 @@ class CompensacionServiceImplTest {
                 .doesNotThrowAnyException();
 
         verify(compensacionRepository).saveAll(any());
+    }
+
+    @Test
+    void ejecutarCompensacion_noEjecutaTransaccionesDuplicacion() {
+
+        Compensacion yaEjecutada = Compensacion.builder()
+                .id(1L)
+                .monto(new BigDecimal("100"))
+                .monedaOrigen("USD")
+                .monedaDestino("COP")
+                .ejecutado(true)
+                .build();
+
+        when(compensacionRepository.findByEjecutadoFalse())
+                .thenReturn(List.of());
+
+        assertThatCode(() -> compensacionService.ejecutarCompensacion())
+                .doesNotThrowAnyException();
+
+        verify(compensacionRepository, never()).saveAll(any());
+        verify(restTemplate, never()).postForObject(anyString(), any(), any());
     }
 }

@@ -10,12 +10,30 @@ import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
 
+
+/**
+ * Implementación del servicio de tipo de cambio (FX).
+ * Consulta la API externa (ExchangeRate-API) para obtener el tipo de cambio
+ * entre dos monedas.
+ */
+
 @Service
 @RequiredArgsConstructor
 public class FxServiceImpl implements FxService {
 
     private final RestTemplate restTemplate;
     private final FxApiProperties fxApiProperties;
+
+
+    /**
+     * Obtiene el tipo de cambio entre dos monedas usando la API externa.
+     *
+     * @param monedaOrigen  código de la moneda de origen (ej. "USD").
+     * @param monedaDestino código de la moneda destino (ej. "COP").
+     * @return tipo de cambio como BigDecimal.
+     * @throws TipoCambioNoDisponibleException si no se encuentra la tasa.
+     * @throws RuntimeException si la API no responde correctamente.
+     */
 
     @Override
     public BigDecimal obtenerTipoCambio(String monedaOrigen, String monedaDestino) {

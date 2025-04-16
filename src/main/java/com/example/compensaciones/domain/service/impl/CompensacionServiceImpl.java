@@ -27,6 +27,11 @@
     import java.util.Optional;
     import java.util.stream.Collectors;
 
+    /**
+     * Implementación del servicio de compensaciones.
+     * Gestiona el registro, ejecución y consulta de transacciones monetarias,
+     * además del envío de paquetes agrupados por país destino.
+     */
     @Slf4j
     @Service
     @RequiredArgsConstructor
@@ -37,6 +42,13 @@
         private final RestTemplate restTemplate;
         private final BancoDestinoRepository bancoDestinoRepository;
 
+
+        /**
+         * Registra una nueva compensación calculando el tipo de cambio y monto convertido.
+         *
+         * @param requestDto datos de entrada de la transacción.
+         * @return DTO con los datos registrados.
+         */
 
         @Override
         @Transactional
@@ -62,12 +74,25 @@
             return mapToDto(saved);
         }
 
+
+        /**
+         * Obtiene una compensación por su ID.
+         *
+         * @param id identificador de la compensación.
+         * @return DTO con la información de la compensación.
+         * @throws CompensacionNoEncontradaException si no existe.
+         */
         @Override
         public CompensacionResponseDto  obtenerCompensacionPorId(Long id) {
             Compensacion entity = repository.findById(id)
                     .orElseThrow(() -> new CompensacionNoEncontradaException(id));
             return mapToDto(entity);
         }
+
+        /**
+         * Ejecuta todas las compensaciones pendientes agrupadas por moneda destino,
+         * las envía al banco correspondiente, y las marca como ejecutadas.
+         */
 
         @Override
         @Transactional
@@ -112,18 +137,37 @@
 
         }
 
+        /**
+         * Realiza la conversión de moneda utilizando el tipo de cambio actual.
+         *
+         * @param montoOriginal monto original.
+         * @param monedaOrigen moneda de origen.
+         * @param monedaDestino moneda de destino.
+         * @return monto convertido.
+         */
+
         public BigDecimal calcularMontoConvertido(BigDecimal montoOriginal, String monedaOrigen, String monedaDestino) {
             BigDecimal tipoCambio = fxService.obtenerTipoCambio(monedaOrigen, monedaDestino);
             return montoOriginal.multiply(tipoCambio);
         }
 
-
-       // @Scheduled(cron = "0 0 */12 * * *")
-       @Scheduled(cron = "*/30 * * * * *")
+        /**
+         * Ejecuta automáticamente la compensación de paquetes cada 12 horas.
+         * Cron: 0 0 /12 * * *  cada 12 horas exactas.
+                */
+        @Scheduled(cron = "0 0 */12 * * *")
+       //@Scheduled(cron = "*/30 * * * * *")
        public void ejecutarCada12Horas() {
             this.ejecutarCompensacion();
         }
 
+
+        /**
+         * Convierte una entidad Compensacion a su DTO correspondiente.
+         *
+         * @param c entidad de compensación.
+         * @return DTO con los datos.
+         */
         private CompensacionResponseDto mapToDto(Compensacion c) {
             return CompensacionResponseDto.builder()
                     .id(c.getId())

@@ -16,14 +16,26 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+
+/**
+ * Servicio encargado de generar reportes diarios de las transacciones
+ * registradas en el sistema. Permite obtener el resumen en memoria o en formato CSV.
+ */
+
 @Service
 @RequiredArgsConstructor
 public class ReporteServiceImpl implements ReporteService {
 
     private final CompensacionRepository repository;
 
+
+    /**
+     * Servicio encargado de generar reportes diarios de las transacciones
+     * registradas en el sistema. Permite obtener el resumen en memoria o en formato CSV.
+     */
     @Override
     public List<ReporteDiarioDto>
+
     generarReporteDiario() {
         LocalDate hoy = LocalDate.now(ZoneOffset.UTC);
         LocalDateTime desde = hoy.atStartOfDay();
@@ -55,6 +67,13 @@ public class ReporteServiceImpl implements ReporteService {
                 })
                 .toList();
     }
+
+    /**
+     * Genera el reporte diario en formato CSV.
+     * Encabezado: Moneda,Total Transacciones,Ejecutadas,No Ejecutadas,Monto Total
+     *
+     * @return archivo CSV como arreglo de bytes codificado en UTF-8.
+     */
 
     @Override
     public byte[] generarReporteDiarioCsv() {

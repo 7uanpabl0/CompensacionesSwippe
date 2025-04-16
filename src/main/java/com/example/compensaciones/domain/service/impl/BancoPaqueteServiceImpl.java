@@ -17,6 +17,14 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+
+/**
+ * Servicio que gestiona la recepción de paquetes de compensaciones
+ * enviados por otros bancos (como Bancolombia).
+ * Se encarga de registrar paquetes, calcular el total de las transacciones
+ * y evitar duplicados.
+ */
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -24,6 +32,14 @@ public class BancoPaqueteServiceImpl implements BancoPaqueteService {
 
     private final BancoPaqueteRepository bancoPaqueteRepository;
     private final BancoTransaccionRepository bancoTransaccionRepository;
+
+
+    /**
+     * Registra un nuevo paquete de compensaciones recibido.
+     * Si el paquete ya fue procesado anteriormente (por ID), se ignora.
+     *
+     * @param dto DTO que contiene el paquete con sus transacciones.
+     */
 
     @Override
     public void registrarPaquete(CompensacionPaqueteDto dto) {
@@ -58,12 +74,17 @@ public class BancoPaqueteServiceImpl implements BancoPaqueteService {
 
         paquete.setTransacciones(transacciones);
 
-        bancoPaqueteRepository.save(paquete);  // Guardar el paquete de transacciones
+        bancoPaqueteRepository.save(paquete);
 
         log.info("📦 Paquete recibido con {} transacciones. Total: ${}",
                 transacciones.size(), montoTotal);
     }
-
+    /**
+     * Verifica si un paquete con el mismo ID ya ha sido registrado previamente.
+     *
+     * @param paqueteId UUID del paquete a verificar.
+     * @return true si ya existe, false si es nuevo.
+     */
     private boolean paqueteYaRegistrado(UUID paqueteId) {
         return bancoPaqueteRepository.existsById(paqueteId);
     }
