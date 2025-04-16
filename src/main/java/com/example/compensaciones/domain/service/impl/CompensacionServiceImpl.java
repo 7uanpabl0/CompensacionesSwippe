@@ -63,7 +63,6 @@
         }
 
         @Override
-        @Cacheable(value = "compensacion", key = "#id")
         public CompensacionResponseDto  obtenerCompensacionPorId(Long id) {
             Compensacion entity = repository.findById(id)
                     .orElseThrow(() -> new CompensacionNoEncontradaException(id));
@@ -72,7 +71,6 @@
 
         @Override
         @Transactional
-        @CacheEvict(value = "compensacion", allEntries = true)
         public void ejecutarCompensacion() {
             List<Compensacion> noEjecutadas = repository.findByEjecutadoFalse();
 
@@ -84,8 +82,7 @@
 
             try {
                 agrupadas.forEach((moneda, grupo) -> {
-                    grupo.forEach(c -> c.setEjecutado(true));
-                    repository.saveAll(grupo);
+
 
                     BancoDestino banco = bancoDestinoRepository.findByMoneda(moneda)
                             .orElseThrow(() -> new BancoDestinoNoEncontradoException(moneda));
@@ -104,6 +101,8 @@
 
                     log.info("Enviando Paquete a {} con {} transacciones", urlBanco, detalleDto.size());
                     restTemplate.postForObject(urlBanco, paquete, Void.class);
+                    grupo.forEach(c -> c.setEjecutado(true));
+                    repository.saveAll(grupo);
                     log.info("[ENVÍO]Correcto de transacciones");
                 });
             } catch (Exception e) {
@@ -119,8 +118,9 @@
         }
 
 
-        @Scheduled(cron = "0 0 */12 * * *")
-        public void ejecutarCada12Horas() {
+       // @Scheduled(cron = "0 0 */12 * * *")
+       @Scheduled(cron = "*/30 * * * * *")
+       public void ejecutarCada12Horas() {
             this.ejecutarCompensacion();
         }
 

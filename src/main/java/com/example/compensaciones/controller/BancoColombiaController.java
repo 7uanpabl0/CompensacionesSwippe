@@ -24,6 +24,6 @@ public class BancoColombiaController {
     public ResponseEntity<Void> recibirPaquete(@RequestBody CompensacionPaqueteDto paquete) {
         log.info("Paquete recibido en bancolombia: {}", paquete);
         bancoPaqueteService.registrarPaquete(paquete);
-        return ResponseEntity.ok().build(); // o .noContent().build()
+        return ResponseEntity.ok().build();
     }
 }

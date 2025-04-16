@@ -27,21 +27,19 @@ public class BancoPaqueteServiceImpl implements BancoPaqueteService {
 
     @Override
     public void registrarPaquete(CompensacionPaqueteDto dto) {
-        // Verificar si el paquete ya ha sido registrado
         if (paqueteYaRegistrado(dto.getPaqueteId())) {
             log.info("El paquete con ID {} ya ha sido registrado previamente, evitando duplicados.", dto.getPaqueteId());
-            return;  // Si ya fue registrado, no lo procesamos nuevamente
+            return;
         }
 
         BigDecimal montoTotal = dto.getTransacciones().stream()
                 .map(CompensacionResponseDto::getMontoConvertido)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        // Generar un UUID si no está presente en el DTO
         UUID paqueteId = dto.getPaqueteId() != null ? dto.getPaqueteId() : UUID.randomUUID();
 
         BancoPaquete paquete = BancoPaquete.builder()
-                .id(paqueteId)  // Establecer el ID único del paquete
+                .id(paqueteId)
                 .fechaRecepcion(LocalDateTime.now())
                 .estado(EstadoPaquete.PENDIENTE)
                 .montoTotal(montoTotal)
