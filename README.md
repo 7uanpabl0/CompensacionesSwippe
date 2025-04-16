@@ -50,6 +50,12 @@ Este proyecto implementa un microservicio backend en **Spring Boot**, encargado 
     SPRING_DATASOURCE_USERNAME: postgres
     SPRING_DATASOURCE_PASSWORD: 1234
 
+## 🗃️ Scripts SQL
+
+Los scripts se encuentran en la carpeta `sql/`:
+
+- `schema.sql`: estructura de base de datos
+- `data.sql`: datos iniciales como bancos y endpoints
 
 
 ## 🐳 Despliegue con Docker
